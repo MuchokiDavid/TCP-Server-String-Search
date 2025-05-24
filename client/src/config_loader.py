@@ -1,4 +1,11 @@
 # src/config_loader.py
+"""
+Load configuration settings from an INI file and return them as a dictionary.
+
+Return: 
+    A dictionary containing the configuration settings loaded from the INI file.
+"""
+
 import configparser
 from typing import Dict, Any
 from pathlib import Path
