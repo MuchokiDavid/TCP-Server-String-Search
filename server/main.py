@@ -17,6 +17,6 @@ if __name__ == '__main__':
     If the script is executed directly, start the server.
     @param BIND_IP - The IP address to bind the server to.
     @param BIND_PORT - The port number to bind the server to.
-    @param DEBUG - Boolean flag indicating whether to run the server in debug mode.
+    @param DEBUG - Boolean flag indicating whether to run the server in debug mode or not.
     """
-    server.start_server(host=BIND_IP, port=BIND_PORT, debug=DEBUG)
+    server.start(host=BIND_IP, port=BIND_PORT, debug=DEBUG)
