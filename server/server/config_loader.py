@@ -1,3 +1,9 @@
+"""
+Load configuration settings from an INI file and return them as a dictionary.
+
+Return: 
+    A dictionary containing the configuration settings loaded from the INI file.
+"""
 import configparser
 import os
 from typing import Dict, Any
@@ -5,7 +11,7 @@ from pathlib import Path
 
 def load_config() -> Dict[str, Any]:
     """Load configuration from INI file."""
-    
+
     # Try to find config.ini relative to the package root
     base_dir = Path(__file__).parent.parent
     file_path = base_dir / "config.ini"
