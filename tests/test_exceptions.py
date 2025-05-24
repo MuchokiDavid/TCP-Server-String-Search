@@ -73,5 +73,6 @@ def test_handle_client_valid_data(server):
 
     server.handle_client(mock_sock, mock_addr)
 
-    mock_sock.sendall.assert_called()  # Just ensure it responded
+    # Just ensure it responded, actual response content is not tested here
+    mock_sock.sendall.assert_called()  
     mock_sock.close.assert_called_once()
