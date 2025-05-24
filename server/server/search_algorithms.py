@@ -1,15 +1,23 @@
+"""
+Search algorithms module for string matching operations.
+Contains various search algorithms implementations for finding strings in content.
+"""
+
 import bisect
 import math
-from typing import List, Optional
+from typing import List, Optional, Union, Set
+import warnings
+from time import perf_counter
 
 from . import config_loader
 
-"""
-Load the configuration using the `config_loader`
-Set the `DEBUG` variable to the value of the 'debug' key in the configuration.
-"""
+# Load the configuration using the `config_loader`
 CONFIG: dict = config_loader.load_config()
 DEBUG: bool = CONFIG["debug"]
+MAX_TIMES = {
+    'cached': 0.5,    # milliseconds
+    'uncached': 40.0   # milliseconds
+}
 
 
 def linear_search(search_string: str, content: List[str]) -> bool:
@@ -52,7 +60,6 @@ def binary_search(search_string: str, content: List[str]) -> bool:
     index = bisect.bisect_left(sorted_content, search_string)
     return index != len(sorted_content) and sorted_content[index] == search_string
 
-
 def jump_search(search_string: str, content: List[str]) -> Optional[bool]:
     """
     Search for the given string in the file using jump search algorithm.
@@ -75,22 +82,21 @@ def jump_search(search_string: str, content: List[str]) -> Optional[bool]:
         prev = curr
         curr += block_size
         if curr >= n:
-            curr = n
+            curr = min(curr, n)
 
     # Perform a linear search within the block
-    for i in range(prev, min(curr, n)):
+    for i in range(prev, curr):
         if content[i] == search_string:
             return True
 
     return False
 
-
-def search_in_set(search_item: str, content: List[str]) -> bool:
+def search_in_set(search_item: Union[str, list], content: List[str]) -> bool:
     """
     Checks if a given item exists in the set.
 
     Args:
-        search_item (str): Item to search for.
+        search_item (Union[str, list]): Item to search for.
         content (List[str]): List of strings.
 
     Returns:
@@ -98,7 +104,18 @@ def search_in_set(search_item: str, content: List[str]) -> bool:
     """
     if content:
         content = sorted(content)
-    data_set: set[str] = set(content)
+
+    data_set: Set[str] = set(content)
+
+    # Handle the case when search_item is a list
+    if isinstance(search_item, list):
+        # Convert the list to a tuple (which is hashable) or search for each item
+        if len(search_item) == 1:
+            return search_item[0] in data_set
+        # If it's a multi-item list, we need to decide how to handle it
+        # Example: Check if any item in the list is in the data_set
+        return any(item in data_set for item in search_item)
+
     return search_item in data_set
 
 
@@ -114,6 +131,9 @@ def exponential_search(search_string: str, content: List[str]) -> bool:
         bool: True if found, False otherwise.
     """
     content = sorted(content)
+    if not content:
+        return False
+
     if content[0] == search_string:
         return True
 
