@@ -58,7 +58,11 @@ string_match_server/
 │   └── main.py
 ├── tests/
 │   ├── __init__.py
-│   └── test_server.py
+│   ├── locustfile.py
+│   ├── pytest.ini
+│   ├── test_benchmark.py
+│   ├── test_ssl.py
+│   └── test_exception.py
 ├── security/
 │   ├── server.crt
 │   └── server.key
