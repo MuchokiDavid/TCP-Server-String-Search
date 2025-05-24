@@ -1,5 +1,11 @@
-#!/usr/bin/env python3
+"""
+Sort the data in the input file based on the first numerical value in each line and save the sorted data to the output file.
 
+Parameters:
+    Input_file - The file containing unsorted data.
+    Output_file - The file where the sorted data will be saved.
+"""
+#!/usr/bin/env python3
 def sort_data(input_file, output_file):
     # Read all lines from the input file
     with open(input_file, 'r') as f:
