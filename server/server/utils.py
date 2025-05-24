@@ -19,6 +19,20 @@ configuration variables
 SSL_CERT: str = CONFIG["ssl_certificate"]
 SSL_KEY: str = CONFIG["ssl_private_key"]
 
+config_dir: str = os.path.dirname(os.path.abspath(__file__))
+project_root: str = os.path.abspath(os.path.join(config_dir, "../.."))
+
+# Replace relative paths in the config with absolute paths
+if SSL_CERT.startswith("../"):
+    SSL_CERT = os.path.abspath(
+        os.path.join(project_root, SSL_CERT[3:])
+    )
+if SSL_KEY.startswith("../"):
+    SSL_KEY = os.path.abspath(
+        os.path.join(project_root, SSL_KEY[3:])
+    )
+
+
 logger = logging.getLogger("string_match_server")
 
 
@@ -75,8 +89,6 @@ def create_secure_ssl_context() -> ssl.SSLContext:
         # Disable weak protocols and ciphers
         context.options |= ssl.OP_NO_SSLv2
         context.options |= ssl.OP_NO_SSLv3
-        context.options |= ssl.OP_NO_TLSv1
-        context.options |= ssl.OP_NO_TLSv1_1
         context.options |= ssl.OP_SINGLE_DH_USE
         context.options |= ssl.OP_SINGLE_ECDH_USE
         context.options |= ssl.OP_NO_COMPRESSION  # Prevent CRIME attacks
