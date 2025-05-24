@@ -12,10 +12,11 @@ import ssl
 from timeit import default_timer as timer
 from typing import List, Optional, Union, Tuple
 import logging
+import functools
 
 from . import config_loader
 from . import utils
-from .search_algorithms import jump_search
+from .search_algorithms import jump_search, search_in_set, linear_search, binary_search
 from .exceptions import InvalidPayloadError, FileAccessError
 
 CONFIG: dict = config_loader.load_config()
@@ -46,7 +47,8 @@ if STRINGS_FILE_PATH.startswith("../"):
         os.path.join(project_root, STRINGS_FILE_PATH[3:])
     )
 
-CACHE_DATA: Optional[List[str]] = utils.reread_file(STRINGS_FILE_PATH)
+cached_reread_file = functools.cache(utils.reread_file)
+CACHE_DATA: Optional[List[str]] = cached_reread_file(STRINGS_FILE_PATH)
 
 if SSL_CERT.startswith("../"):
     SSL_CERT = os.path.abspath(os.path.join(project_root, SSL_CERT[3:]))
@@ -65,13 +67,13 @@ logger = logging.getLogger(__name__)
 FILE_SIZE: Optional[int] = utils.get_file_size(STRINGS_FILE_PATH)
 
 # Create the secure SSL context at module level
-context = None
+CONTEXT = None
 if SSL_ENABLED:
     try:
-        context = utils.create_secure_ssl_context()
+        CONTEXT = utils.create_secure_ssl_context()
         logger.info("Secure SSL context initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize SSL context: {e}")
+        logger.error("Failed to initialize SSL context: %s", e)
         logger.error("Server will not start with SSL enabled")
         raise
 
@@ -188,7 +190,7 @@ class StringSearchServer:
         """
         # Get start execution time
         start_time: float = timer()
-        found: bool = jump_search(request, data)
+        found: bool = linear_search(request, data)
         # Execution end time
         end_time: float = timer()
         response_time: float = (end_time - start_time) * 1000
@@ -247,7 +249,7 @@ class StringSearchServer:
             return data
         except Exception as e:
             logger.error("Error receiving data: %s", e)
-            raise InvalidPayloadError from e
+            raise InvalidPayloadError(str(e)) from e
 
 def handle_concurrency_metrics(client_operation: StringSearchServer) -> None:
     """
@@ -285,7 +287,7 @@ def start(host: str, port: int, debug: bool) -> None:
         if SSL_ENABLED:
             # Wrap socket if ssl is enabled
             try:
-                server_socket = context.wrap_socket(sock, server_side=True)
+                server_socket = CONTEXT.wrap_socket(sock, server_side=True)
                 logger.info("SSL enabled connection")
             except socket.timeout as e:
                 logger.error("Socket timeout: %s", e)
