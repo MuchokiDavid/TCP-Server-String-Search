@@ -17,14 +17,16 @@ class SearchFileReadError(Exception):
     """
     Exception raised when there is an error reading the search file.
     """
-    def __init__(self, message="Error reading the search file"):
-        self.message = message
-        super().__init__(self.message)
+    pass
         
 class FileAccessError(Exception):
     """
     Exception raised when there is an error accessing the file.
     """
-    def __init__(self, message="Error accessing the file"):
-        self.message = message
-        super().__init__(self.message)
+    pass
+        
+class FileNotFoundError(Exception):
+    """
+    Exception raised when the specified file is not found.
+    """
+    pass
