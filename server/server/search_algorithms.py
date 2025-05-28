@@ -24,12 +24,12 @@ def linear_search(search_string: str, content: List[str]) -> bool:
     """
     Search for the given string in the file using linear algorithm.
 
-    Arg:
-        search_string (str)-> The string being searched.
-        content (List[str])-> List of strings being searched
+    Parameters:
+        search_string (str): The string being searched.
+        content (List[str]): List of strings being searched.
 
-    Return:
-        bool: True if found, False otherwise.
+    Returns:
+        boolean: True if found, False otherwise.
     """
     for line in content:
         if line.strip() == search_string:
@@ -41,11 +41,11 @@ def binary_search(search_string: str, content: List[str]) -> bool:
     """
     Search for the given string in the file using binary search algorithm.
 
-    Arg:
-        search_string (str)-> The string being searched.
-        content (List[str])-> List of strings being searched
+    Parameters:
+        search_string (str): The string being searched.
+        content (List[str]): List of strings being searched.
 
-    Return:
+    Returns:
         bool: True if found, False otherwise.
     """
     # Flatten if needed
@@ -64,11 +64,11 @@ def jump_search(search_string: str, content: List[str]) -> Optional[bool]:
     """
     Search for the given string in the file using jump search algorithm.
 
-    Arg:
-        search_string (str)-> The string being searched.
-        content (List[str])-> List of strings being searched
+    Parameters:
+        search_string (str): The string being searched.
+        content (List[str]): List of strings being searched.
 
-    Return:
+    Returns:
         bool: True if found, False otherwise.
     """
     n: int = len(content)
@@ -95,7 +95,7 @@ def search_in_set(search_item: Union[str, list], content: List[str]) -> bool:
     """
     Checks if a given item exists in the set.
 
-    Args:
+    Parameters:
         search_item (Union[str, list]): Item to search for.
         content (List[str]): List of strings.
 
@@ -109,7 +109,7 @@ def search_in_set(search_item: Union[str, list], content: List[str]) -> bool:
 
     # Handle the case when search_item is a list
     if isinstance(search_item, list):
-        # Convert the list to a tuple (which is hashable) or search for each item
+        # Convert the list to a tuple (which is hash-able) or search for each item
         if len(search_item) == 1:
             return search_item[0] in data_set
         # If it's a multi-item list, we need to decide how to handle it
