@@ -1,12 +1,12 @@
 # String Search Server
 
-A high-performance TCP server for fast string existence checks in large files (250k+ records), supporting SSL encryption and configurable search modes.
+A high-performance TCP server for fast string existence checks in large files (Over 250,000 records), supporting SSL encryption and configurable search modes.
 
 ## Key Features
 
   - **Blazing-fast searches**:
-      - 0.5ms response (cached mode)
-      - \<40ms response (uncached mode)
+      - 0.5 ms response (cached mode)
+      - <40 ms response (uncached mode)
   - **Secure communications**:
       - Configurable SSL/TLS encryption
       - Self-signed certificates
@@ -68,8 +68,8 @@ string_match_server/
 │   └── server.key
 ├── install/
 │   ├── commands.md
-│   ├── setup_deamon.sh
-│   ├── Linux_deamon_logs.png
+│   ├── setup_daemon.sh
+│   ├── Linux_daemon_logs.png
 │   ├── string_search.service
 │   └── INSTALL.md
 ├── data/
@@ -106,6 +106,36 @@ SSL_KEY = /path/to/server.key
 
 [LOGGING]
 DEBUG = True
+```
+
+## SSL Certificate Setup
+
+#### 1. Generate Test Certificates
+
+```bash
+# Create CA (for testing only)
+openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
+  -keyout ca.key -out ca.crt \
+  -subj "/CN=StringSearch Test CA"
+```
+#### 2. Create server certificate
+```bash
+openssl req -newkey rsa:2048 -nodes -keyout server.key \
+  -out server.csr -subj "/CN=stringsearch.example.com"
+```
+
+#### 3. Sign with CA
+
+```bash
+openssl x509 -req -days 365 -in server.csr -CA ca.crt \
+  -CAkey ca.key -CAcreateserial -out server.crt \
+  -extfile <(echo "subjectAltName=DNS:localhost,IP:127.0.0.1")
+```
+
+#### 4. Verify
+
+```bash
+openssl verify -CAfile ca.crt server.crt
 ```
 
 ## Usage
