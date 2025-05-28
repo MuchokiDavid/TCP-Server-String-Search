@@ -1,11 +1,11 @@
 """
-Summary of the benchmark tests for search algorithms.
+Benchmark tests for search algorithms.
 This module includes tests for linear search, binary search, jump search,
 search in set, and exponential search algorithms.
 Each test uses pytest-benchmark to measure performance against a sample dataset.
 The sample content is loaded from a file, and the target string is selected
 from the middle of the content to ensure it exists.
-The tests assert that the search algorithms return True when the target string is found.
+These tests assert that the search algorithms correctly return True when the target string is found.
 """
 import os
 import pytest
@@ -27,7 +27,7 @@ def sample_content():
         List[str]: List of strings from the file, excluding empty lines.
     """
     # Ensure the test file exists in the expected location
-    # Adjust the path as necessary for your project structure
+    # This path is relative to the current test file.
     test_file_path = os.path.join(os.path.dirname(__file__), "testdata/sample.txt")
     assert os.path.exists(test_file_path)
     with open(test_file_path, "r") as f:
@@ -41,13 +41,13 @@ def target_string(sample_content):
     Returns:
         str: A string from the middle of the sample content.
     """
-    return sample_content[len(sample_content) // 2]  # Pick a middle string
+    return sample_content[len(sample_content) // 2]  # Pick a string from the middle
 
 
 def test_linear_search_benchmark(benchmark, sample_content, target_string):
     """
     Benchmark test for linear search algorithm.
-    Args:
+    Parameters:
         benchmark: pytest-benchmark fixture for measuring performance.
         sample_content: List[str]: List of strings to search in.
         target_string: str: String to search for.
@@ -57,7 +57,7 @@ def test_linear_search_benchmark(benchmark, sample_content, target_string):
 
 def test_binary_search_benchmark(benchmark, sample_content, target_string):
     """ Benchmark test for binary search algorithm.
-    Args:
+    Parameters:
         benchmark: pytest-benchmark fixture for measuring performance.
         sample_content: List[str]: List of strings to search in.
         target_string: str: String to search for.
@@ -67,7 +67,7 @@ def test_binary_search_benchmark(benchmark, sample_content, target_string):
 
 def test_jump_search_benchmark(benchmark, sample_content, target_string):
     """ Benchmark test for jump search algorithm.
-    Args:
+    Parameters:
         benchmark: pytest-benchmark fixture for measuring performance.
         sample_content: List[str]: List of strings to search in.
         target_string: str: String to search for.
@@ -77,7 +77,7 @@ def test_jump_search_benchmark(benchmark, sample_content, target_string):
 
 def test_search_in_set_benchmark(benchmark, sample_content, target_string):
     """ Benchmark test for search in set algorithm.
-    Args:
+    Parameters:
         benchmark: pytest-benchmark fixture for measuring performance.
         sample_content: List[str]: List of strings to search in.
         target_string: str: String to search for.
@@ -87,7 +87,7 @@ def test_search_in_set_benchmark(benchmark, sample_content, target_string):
 
 def test_exponential_search_benchmark(benchmark, sample_content, target_string):
     """ Benchmark test for exponential search algorithm.
-    Args:
+    Parameters:
         benchmark: pytest-benchmark fixture for measuring performance.
         sample_content: List[str]: List of strings to search in.
         target_string: str: String to search for.

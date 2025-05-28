@@ -1,5 +1,5 @@
 """
-Test cases for the StringSearchServer class exceptions handling.
+Test cases for the StringSearchServer class's exception handling.
 """
 import pytest
 import socket
@@ -73,6 +73,6 @@ def test_handle_client_valid_data(server):
 
     server.handle_client(mock_sock, mock_addr)
 
-    # Just ensure it responded, actual response content is not tested here
+    # Ensure it responded; the actual response content is not tested here.
     mock_sock.sendall.assert_called()  
     mock_sock.close.assert_called_once()
