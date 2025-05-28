@@ -17,9 +17,10 @@ MAX_PAYLOAD = 1024
 
 # Base samples provided by the user
 def create_test_string() -> List[str]:
-    """_summary_
-    Generate a list of 1000 random samples from the given base samples list.
-    @returns A list of 1000 randomly selected samples from the base samples list.
+    """Generates a list of 1000 random samples from the base samples list.
+    
+    Returns:
+        A list of 1000 randomly selected samples from the base_samples list.
     """
     base_samples: List[str] = [
         "1;0;1;11;0;10;5;0;",
