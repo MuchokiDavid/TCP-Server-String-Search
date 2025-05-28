@@ -1,6 +1,6 @@
 """
-A collection of helper functions related to file reading and processing
-Includes error handling and logging.
+A collection of helper functions for file reading and processing,
+including error handling and logging.
 """
 
 import os
@@ -38,13 +38,13 @@ logger = logging.getLogger("string_match_server")
 
 def reread_file(file_path: str) -> Optional[List[str]]:
     """
-    Reads a file each line and returns a list of stripped lines.
+    Reads a file line by line and returns a list of stripped, non-empty lines.
 
     Args:
         file_path (str): Path to the file.
 
     Returns:
-        Optional[List[str]]: List of lines in the file, or None on failure.
+        Optional[List[str]]: List of non-empty lines from the file, or None on failure.
     """
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -57,13 +57,13 @@ def reread_file(file_path: str) -> Optional[List[str]]:
 
 def get_file_size(file_path: str) -> Optional[int]:
     """
-    Attempt to read a file and return the length of the content.
+    Attempts to read a file and return the number of non-empty lines.
 
     Args:
-        file_path - the path to the file to be read
+        file_path (str): The path to the file to be read.
 
-    Return
-        The length of the content of the file, or None if an error occurs.
+    Returns:
+        Optional[int]: The number of non-empty lines in the file, or None if an error occurs.
     """
     return len(reread_file(file_path)) if file_path else None
 
@@ -71,31 +71,30 @@ def get_file_size(file_path: str) -> Optional[int]:
 def create_secure_ssl_context() -> ssl.SSLContext:
     """
     Create a secure SSL context with proper security configurations.
-
+    
     Returns:
-        Properly configured SSL context for server use
-
+        ssl.SSLContext: A properly configured SSL context for server use.
+    
     Raises:
         ssl.SSLError: If SSL configuration fails
-        FileNotFoundError: If certificate files are not found
+        FileNotFoundError: If certificate files are not found.
     """
     try:
-        # Create secure context for server
+        # Create a secure context for the server
         context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 
-        # Set minimum TLS version to 1.2 (disable older, insecure versions)
+        # Set minimum TLS version to 1.2 (disables older, insecure versions)
         context.minimum_version = ssl.TLSVersion.TLSv1_2
 
         # Disable weak protocols and ciphers
         context.options |= ssl.OP_NO_SSLv2
         context.options |= ssl.OP_NO_SSLv3
         context.options |= ssl.OP_SINGLE_DH_USE
-        context.options |= ssl.OP_SINGLE_ECDH_USE
         context.options |= ssl.OP_NO_COMPRESSION  # Prevent CRIME attacks
-
+        # context.options |= ssl.OP_SINGLE_ECDH_USE # This is often default/preferred with modern ciphers
         # Set secure cipher suites (disable weak ciphers)
         context.set_ciphers(
-            "ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:!aNULL:!MD5:!DSS"
+            "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:!aNULL:!MD5:!DSS"
         )
 
         # Verify certificate files exist before loading

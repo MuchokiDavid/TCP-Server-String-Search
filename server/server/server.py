@@ -5,6 +5,7 @@ This module provides a socket-based server that allows clients to search
 for strings in a specified file. It supports SSL encryption, concurrent
 connections via threading, and various search algorithms.
 """
+
 import socket
 import threading
 import os
@@ -16,7 +17,7 @@ import functools
 
 from . import config_loader
 from . import utils
-from .search_algorithms import jump_search, search_in_set, linear_search, binary_search
+from .search_algorithms import linear_search
 from .exceptions import InvalidPayloadError, FileAccessError
 
 CONFIG: dict = config_loader.load_config()
@@ -35,7 +36,7 @@ SSL_CERT: str = CONFIG["ssl_certificate"]
 SSL_KEY: str = CONFIG["ssl_private_key"]
 
 """
-- Get the directory of the current configuration file
+- Get the directory of the current configuration file.
 - Determine the project root directory by moving two levels up from the configuration directory.
 """
 config_dir: str = os.path.dirname(os.path.abspath(__file__))
@@ -63,7 +64,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Get the file size of string file path file
+# Get the file size of strings document
 FILE_SIZE: Optional[int] = utils.get_file_size(STRINGS_FILE_PATH)
 
 # Create the secure SSL context at module level
@@ -77,13 +78,15 @@ if SSL_ENABLED:
         logger.error("Server will not start with SSL enabled")
         raise
 
+
 class StringSearchServer:
     """
     Server class that handles string search requests from clients.
-    
+
     This class manages client connections, performs string searches in the
     provided data files, and maintains performance statistics.
     """
+
     def __init__(self):
         """Initialize the string search server with performance metrics and thread safety."""
         self.cache_lock = threading.Lock()
@@ -156,7 +159,7 @@ class StringSearchServer:
                 ) / self.performance_stats["total_queries"]
 
             response = "STRING EXISTS" if found else "STRING NOT EXIST"
-            logger.info("%s- %s", response, '200:OK' if found else '404:NOT FOUND')
+            logger.info("%s- %s", response, "200:OK" if found else "404:NOT FOUND")
             # Send response to client
             client_sock.sendall(response.encode())
             logger.debug("Response sent: %s", response)
@@ -183,7 +186,7 @@ class StringSearchServer:
         Args:
             data (List): Data where string is searched from
             request (str): string being searched
-            
+
         Returns:
             True: If string exist.
             False: If string does not exist.
@@ -200,13 +203,13 @@ class StringSearchServer:
     def _load_file_contents(self, path: str) -> Optional[List[str]]:
         """
         Thread-safe file loading with metrics.
-        
+
         Parameters:
             path: Path to the file to load
-            
+
         Returns:
             List of strings from the file or None if an error occurred
-            
+
         Raises:
             FileAccessError: If the file cannot be accessed or loaded
         """
@@ -236,7 +239,7 @@ class StringSearchServer:
 
         Returns:
             The received data as bytes, or None if connection was closed
-            
+
         Raises:
             InvalidPayloadError: If there is an error receiving or processing the data
         """
@@ -251,10 +254,11 @@ class StringSearchServer:
             logger.error("Error receiving data: %s", e)
             raise InvalidPayloadError(str(e)) from e
 
+
 def handle_concurrency_metrics(client_operation: StringSearchServer) -> None:
     """
     Update the concurrency metrics for server monitoring.
-    
+
     Parameters:
         client_operation: The StringSearchServer instance to update metrics for
     """
@@ -267,9 +271,9 @@ def handle_concurrency_metrics(client_operation: StringSearchServer) -> None:
         )
         logger.info("Current threads: %s", current_threads)
         logger.info(
-            "Max concurrent: %s",
-            client_operation.performance_stats["max_concurrent"]
+            "Max concurrent: %s", client_operation.performance_stats["max_concurrent"]
         )
+
 
 def start(host: str, port: int, debug: bool) -> None:
     """
@@ -303,10 +307,7 @@ def start(host: str, port: int, debug: bool) -> None:
         # Listen to requests from clients
         server_socket.listen(5)
         logger.info(
-            "Server listening on %s:%s %s",
-            host,
-            port,
-            '(DEBUG MODE)' if debug else ''
+            "Server listening on %s:%s %s", host, port, "(DEBUG MODE)" if debug else ""
         )
 
         while True:
