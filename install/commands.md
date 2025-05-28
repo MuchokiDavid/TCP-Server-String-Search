@@ -1,4 +1,4 @@
-# Deployment commands to Linux Deamon
+# Deployment commands to Linux Daemon
 
 ### 1. Copy the service file to systemd directory
 
@@ -41,7 +41,7 @@ sudo journalctl -u string-match-server -f
 ### Stop the service:
 
 ```bash
- sudo systemctl stop string-match-server
+sudo systemctl stop string-match-server
 ```
 
 ### Restart the service:
