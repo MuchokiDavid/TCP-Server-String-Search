@@ -1,0 +1,20 @@
+apple
+banana
+cherry
+date
+elderberry
+fig
+grape
+honeydew
+kiwi
+lemon
+mango
+orange
+papaya
+quince
+raspberry
+strawberry
+tangerine
+ugli fruit
+vanilla bean
+watermelon
