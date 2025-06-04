@@ -1,220 +1,58 @@
-# String Search Server
+# String Match Server
 
-A high-performance TCP server for fast string existence checks in large files (Over 250,000 records), supporting SSL encryption and configurable search modes.
+A high-performance server for string matching operations with support for multiple search algorithms.
 
-## Key Features
+## Performance Requirements
 
-  - **Blazing-fast searches**:
-      - 0.5 ms response (cached mode)
-      - <40 ms response (uncached mode)
-  - **Secure communications**:
-      - Configurable SSL/TLS encryption
-      - Self-signed certificates
-  - **Thread-safe architecture**:
-      - Handles unlimited concurrent connections
-  - **Two search modes**:
-      - `REREAD_ON_QUERY=False`: In-memory cached searches
-      - `REREAD_ON_QUERY=True`: Real-time file rereading
+The server must meet the following performance requirements:
 
-## Installation
+- **Cached Mode** (REREAD_ON_QUERY = False): Search operations must complete within 0.5 milliseconds
+- **Uncached Mode** (REREAD_ON_QUERY = True): Search operations must complete within 40.0 milliseconds
 
-### Prerequisites
+## Performance Analysis
 
-  - Python 3.8+
-  - Linux system (tested on Ubuntu 20.04)
+All implemented search algorithms significantly outperform the required thresholds:
 
-<!-- end list -->
+| Algorithm | Mean (ms) | % of Cached Threshold | % of Uncached Threshold |
+|-----------|-----------|----------------------|-------------------------|
+| Linear Search | 0.000756 | 0.15% | 0.00% |
+| Binary Search | 0.001898 | 0.38% | 0.00% |
+| Jump Search | 0.001258 | 0.25% | 0.00% |
+| HashSet Search | 0.001723 | 0.34% | 0.00% |
+| Exponential Search | 0.002881 | 0.58% | 0.01% |
+
+To run performance tests and generate visualizations:
 
 ```bash
-# Unzip repository
-Unzip the project files.
-
-# Install dependencies
-pip install -r requirements.txt
+# Run all performance tests and generate reports
+./tests/run_all_performance_tests.sh
 ```
 
-## Project Structure
+This will generate:
+1. Actual performance measurements with 1000 iterations per algorithm
+2. Performance charts comparing all algorithms
+3. Detailed analysis reports
 
-```
-string_match_server/
-├── client/
-│   ├── src/
-│   │   ├── __init__.py
-│   │   ├── config_loader.py
-│   │   └── client.py
-│   ├── __init__.py
-│   ├── config.ini
-│   └── main.py
-├── server/
-│   ├── server/
-│   │   ├── __init__.py
-│   │   ├── config_loader.py
-│   │   ├── exception.py
-│   │   ├── search_algorithm.py
-│   │   ├── server.py
-│   │   └── utils.py
-│   ├── __init__.py
-│   ├── config.ini
-│   └── main.py
-├── tests/
-│   ├── __init__.py
-│   ├── locustfile.py
-│   ├── pytest.ini
-│   ├── test_benchmark.py
-│   ├── test_ssl.py
-│   └── test_exception.py
-├── security/
-│   ├── server.crt
-│   └── server.key
-├── install/
-│   ├── commands.md
-│   ├── setup_daemon.sh
-│   ├── Linux_daemon_logs.png
-│   ├── string_search.service
-│   └── INSTALL.md
-├── data/
-│   ├── 10k.txt
-│   ├── 50k.txt
-│   ├── 100k.txt
-│   ├── 200k.txt
-│   └── 500k.txt
-├── docs/
-│   └── speed_report.pdf
-├── README.md
-└── requirements.txt
-```
+See the [actual performance results](docs/actual_performance_results.md) for detailed analysis.
 
-## Server Configuration
+## Performance Visualization
 
-Edit `server/config.ini`:
+![Algorithm Performance Chart](docs/algorithm_performance_chart.png)
 
-```ini
-[FILES]
-linuxpath = /path/to/200k.txt
+## Installation and Setup
 
-[QUERY]
-REREAD_ON_QUERY = False
+See the [installation guide](install/INSTALL.md) for detailed setup instructions.
 
-[SERVER]
-HOST = 0.0.0.0
-PORT = 44445
-
-[SSL]
-SSL_ENABLED = True
-SSL_CERT = /path/to/server.crt
-SSL_KEY = /path/to/server.key
-
-[LOGGING]
-DEBUG = True
-```
-
-## SSL Certificate Setup
-
-#### 1. Generate Test Certificates
+## Running Tests
 
 ```bash
-# Create CA (for testing only)
-openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
-  -keyout ca.key -out ca.crt \
-  -subj "/CN=StringSearch Test CA"
-```
-#### 2. Create server certificate
-```bash
-openssl req -newkey rsa:2048 -nodes -keyout server.key \
-  -out server.csr -subj "/CN=stringsearch.example.com"
+# Run all tests
+pytest
+
+# Generate test coverage report
+./tests/coverage_report.py
 ```
 
-#### 3. Sign with CA
+## SSL Configuration
 
-```bash
-openssl x509 -req -days 365 -in server.csr -CA ca.crt \
-  -CAkey ca.key -CAcreateserial -out server.crt \
-  -extfile <(echo "subjectAltName=DNS:localhost,IP:127.0.0.1")
-```
-
-#### 4. Verify
-
-```bash
-openssl verify -CAfile ca.crt server.crt
-```
-
-## Usage
-
-### As a Standalone Server
-
-```bash
-python server/main.py
-```
-
-### As a Systemd Service
-
-```bash
-# Copy service file
-sudo cp install/string_search_server.service /etc/systemd/system/
-
-# Reload and start
-sudo systemctl daemon-reload
-sudo systemctl start string_search
-sudo systemctl enable string_search
-```
-
-## Testing
-
-### Unit Tests
-
-```bash
-pytest tests/ --cov=src --cov-report=html
-```
-
-### Load Testing
-
-```bash
-locust -f tests/load_test.py --host=ssl://localhost:44445
-```
-
-## Running the Client
-
-```bash
-# From project root
-python client/main.py
-```
-
-## Client Configuration
-
-Edit `client/config.ini`:
-
-```ini
-[CLIENT]
-HOST = 0.0.0.0
-PORT = 44445
-
-[SSL]
-SSL_ENABLED = True
-SSL_CERT = /path/to/server.crt
-SSL_KEY = /path/to/server.key
-```
-
-## Search Algorithms
-
-The server implements multiple search strategies:
-
-1.  **Set Membership** - Default for cached mode
-2.  **Binary Search** - For sorted static files
-3.  **Linear Search** - For dynamic files
-4.  **Jump Search** - Operates by dividing the array into smaller blocks of a fixed size, then jumping from block to block.
-5.  **Exponential Search** - Starts from the first element and exponentially increases the range, then performs a binary search.
-
-## Security Considerations
-
-  - All network traffic is encrypted when SSL is enabled.
-  - Input sanitization prevents buffer overflow attacks.
-  - Rate limiting is recommended for public-facing deployments.
-
-## Troubleshooting
-
-| Error                  | Solution                                    |
-| :--------------------- | :------------------------------------------ |
-| `ssl.SSLEOFError`      | Verify certificate paths and permissions    |
-| `Address already in use` | Wait 60s for socket timeout or change port |
-| High CPU usage         | Reduce `max_threads` in config              |
-| `FileNotFoundError`    | Ensure the file is in the config path       |
+See [SSL setup instructions](docs/SSL_SETUP.md) for configuring secure connections.
