@@ -114,7 +114,7 @@ class SocketUser(User):
             total_time: float = (time.time() - start_time) * 1000  # ms
 
             # Use simple logging instead of events API
-            if response in ["STRING EXISTS", "STRING NOT EXIST"]:
+            if response in ["STRING EXISTS", "STRING NOT EXISTS"]:
                 print(f"Success: {query} -> {response} ({total_time:.2f}ms)")
                 if response == "STRING EXISTS":
                     found.append(query)

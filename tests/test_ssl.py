@@ -47,7 +47,7 @@ def mock_ssl_server(ssl_certificates):
                         conn, addr = ssock.accept()
                         with conn:
                             data = conn.recv(1024)
-                            conn.send(b"STRING NOT EXIST")
+                            conn.send(b"STRING NOT EXISTS")
                     except:
                         break
 
