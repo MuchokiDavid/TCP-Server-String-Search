@@ -121,9 +121,9 @@ class StringSearchServer:
         """
         try:
             request: str = self._strip_exceeding_received_data(client_sock, MAX_PAYLOAD)
-            # Check if the request is empty and return STRING NOT EXIST to client
+            # Check if the request is empty and return STRING NOT EXISTS to client
             if not request:
-                client_sock.sendall(b"STRING NOT EXIST")
+                client_sock.sendall(b"STRING NOT EXISTS")
                 logger.error("Empty payload received from client %s", client_addr)
                 return
 
@@ -158,7 +158,7 @@ class StringSearchServer:
                     + response_time
                 ) / self.performance_stats["total_queries"]
 
-            response = "STRING EXISTS" if found else "STRING NOT EXIST"
+            response = "STRING EXISTS" if found else "STRING NOT EXISTS"
             logger.info("%s- %s", response, "200:OK" if found else "404:NOT FOUND")
             # Send response to client
             client_sock.sendall(response.encode())
